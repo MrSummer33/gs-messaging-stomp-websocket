@@ -19,8 +19,19 @@ function connect() {
         setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/greetings', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
+          showGreeting(JSON.parse(greeting.body).content);
         });
+        // stompClient.subscribe('/user/user/topic/'+ $("#name").val() +'/message', function (greeting) {
+        //     showGreeting(JSON.parse(greeting.body).content);
+        // });
+      stompClient.subscribe('/user/hello/broker', function (greeting) {
+        showGreeting(greeting);
+      });
+
+      stompClient.subscribe('/app/hello_subscription', function (greeting) {
+        showGreeting(greeting);
+      });
+
     });
 }
 
@@ -33,7 +44,24 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+    stompClient.send("/app/hello1", {}, JSON.stringify({'name': $("#name").val(),'toUser': $("#toName").val()}));
+}
+
+
+function sendBroker() {
+  stompClient.send("/user/hello/broker", {}, JSON.stringify({'name': $("#name").val(),'toUser': $("#toName").val()}));
+}
+
+function sendHandler() {
+  stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+}
+
+function sendSubscription() {
+  stompClient.send("/app/hello_subscription", {}, JSON.stringify({'name': $("#name").val()}));
+}
+
+function sendDot() {
+  stompClient.send("/app/hello/baocai", {}, null);
 }
 
 function showGreeting(message) {
@@ -47,5 +75,9 @@ $(function () {
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendName(); });
+    $( "#sendBroker" ).click(function() { sendBroker(); });
+    $( "#sendHandler" ).click(function() { sendHandler(); });
+    $( "#sendSubscription" ).click(function() { sendSubscription(); });
+    $( "#sendDot" ).click(function() { sendDot(); });
 });
 
